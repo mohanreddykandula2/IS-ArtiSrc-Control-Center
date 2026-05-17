@@ -1,0 +1,6 @@
+{
+  "name": "CPI iFlow Script Renamer",
+  "description": "Rename scripts in SAP CPI iFlow ZIP files easily and avoid manual editing of XML configurations.",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}
