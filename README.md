@@ -354,12 +354,14 @@ It should return:
 }
 ```
 
-If Vercel returns `FUNCTION_INVOCATION_FAILED`, check the function logs in the Vercel dashboard. Common causes are:
+The Vercel functions use short outbound CPI timeouts so the UI can show a readable error before Vercel terminates the request. If Vercel still returns `FUNCTION_INVOCATION_FAILED`, check the function logs in the Vercel dashboard. Common causes are:
 
 - The SAP CPI endpoint is unreachable from Vercel.
 - The request takes longer than the serverless function timeout.
 - The downloaded iFlow ZIP is too large for Vercel serverless response limits.
 - The CPI credentials or token URL are invalid.
+
+For large or slow CPI tenants, prefer running the full Node server with `npm start` on a backend platform instead of Vercel serverless functions.
 
 ## Command Reference
 
