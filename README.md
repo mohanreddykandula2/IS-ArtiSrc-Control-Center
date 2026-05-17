@@ -98,8 +98,7 @@ flowchart TD
 +-- tsconfig.json        # TypeScript settings
 +-- package.json         # Scripts and dependencies
 +-- package-lock.json    # Dependency lockfile
-+-- .env.example         # Example environment variables
-+-- metadata.json        # AI Studio metadata
++-- .env.example         # Notes about runtime configuration
 ```
 
 ## Core Files
