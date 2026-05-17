@@ -41,6 +41,7 @@ export default function App() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [isDragOver, setIsDragOver] = useState(false);
   const [zipInstance, setZipInstance] = useState<JSZip | null>(null);
+  const [unusedResources, setUnusedResources] = useState<{name: string, path: string}[] | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   const [activeTab, setActiveTab] = useState<'upload' | 'api'>('upload');
@@ -211,6 +212,52 @@ export default function App() {
           });
         }
       });
+
+      // Find unused resources
+      const definitions = Object.values(loadedZip.files).filter(
+        f => !f.dir && (
+            (f.name.startsWith('src/main/resources/scenarioflows/integrationflow/') && f.name.endsWith('.iflw')) ||
+            f.name.endsWith('.mmap') ||
+            f.name.endsWith('.xslt') ||
+            f.name.endsWith('.edmx') ||
+            f.name.endsWith('.prop') ||
+            f.name.endsWith('.xml')
+        )
+      );
+
+      const defTexts: Record<string, string> = {};
+      for (const def of definitions) {
+        defTexts[def.name] = await def.async('string');
+      }
+
+      // Read all resources
+      const candidateResources = Object.values(loadedZip.files).filter(
+         f => !f.dir && f.name.startsWith('src/main/resources/') && 
+              !f.name.startsWith('src/main/resources/scenarioflows/') && 
+              f.name !== 'src/main/resources/parameters.prop'
+      );
+      
+      const unused: {name: string, path: string}[] = [];
+      
+      candidateResources.forEach((res) => {
+         const parts = res.name.split('/');
+         const shortName = parts[parts.length - 1];
+         
+         if (!shortName) return;
+
+         let isUsed = false;
+         for (const [defName, text] of Object.entries(defTexts)) {
+             if (defName !== res.name && text.includes(shortName)) {
+                 isUsed = true;
+                 break;
+             }
+         }
+
+         if (!isUsed) {
+            unused.push({ name: shortName, path: res.name });
+         }
+      });
+      setUnusedResources(unused);
 
       setScripts(scriptFiles);
     } catch (error) {
@@ -809,6 +856,42 @@ export default function App() {
                   </div>
                 </div>
               )}
+
+              {/* Unused Resources Section */}
+              {unusedResources && (
+                <div className="mt-8 bg-white border border-neutral-200 rounded-xl shadow-sm overflow-hidden">
+                  <div className="px-6 py-4 bg-orange-50 border-b border-orange-100 flex items-center justify-between">
+                     <div className="flex items-center gap-3">
+                       <FileArchive className="w-5 h-5 text-orange-600" />
+                       <h3 className="text-sm font-semibold text-orange-900">Unused Resources Analysis</h3>
+                     </div>
+                     <div className="text-xs font-semibold px-2.5 py-1 bg-orange-100 text-orange-700 rounded-full">
+                       {unusedResources.length} Found
+                     </div>
+                  </div>
+                  
+                  {unusedResources.length === 0 ? (
+                    <div className="px-6 py-8 text-center bg-white">
+                      <p className="text-sm text-neutral-500 font-medium">Excellent! All resources in this iFlow appear to be used.</p>
+                    </div>
+                  ) : (
+                    <div className="divide-y divide-neutral-100 max-h-80 overflow-y-auto bg-white">
+                      {unusedResources.map((res, idx) => (
+                        <div key={idx} className="px-6 py-3 flex items-center justify-between group hover:bg-neutral-50">
+                          <div className="flex flex-col">
+                            <span className="text-sm font-medium text-neutral-700">{res.name}</span>
+                            <span className="text-xs text-neutral-400 font-mono mt-0.5" title={res.path}>{res.path}</span>
+                          </div>
+                          <span className="text-[10px] uppercase font-bold tracking-wider text-orange-500 bg-orange-50 px-2 py-0.5 rounded border border-orange-100">
+                            Unused
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
             </motion.div>
           )}
         </AnimatePresence>
