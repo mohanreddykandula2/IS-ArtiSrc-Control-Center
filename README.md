@@ -267,6 +267,18 @@ That command builds the app with the correct repository base path:
 /IS-ArtiSrc-Control-Center/
 ```
 
+It writes the static GitHub Pages build to:
+
+```text
+dist-pages/
+```
+
+The normal full-stack local/server build still uses:
+
+```text
+dist/
+```
+
 Without that base path, GitHub Pages may show a blank page because the browser tries to load JavaScript and CSS from `/assets/...` instead of `/IS-ArtiSrc-Control-Center/assets/...`.
 
 On GitHub Pages:
@@ -289,7 +301,7 @@ For the full CPI API workflow, deploy the Node server to a platform that can run
 | `npm run dev` | Build and run the ready-to-use local server. |
 | `npm run lint` | Run TypeScript checks with `tsc --noEmit`. |
 | `npm run build` | Build frontend and bundle the Node server as ESM. |
-| `npm run build:pages` | Build the static frontend for GitHub Pages. |
+| `npm run build:pages` | Build the static frontend for GitHub Pages into `dist-pages/`. |
 | `npm start` | Start the built server from `dist/server.mjs`. |
 
 ## Production Readiness Checklist
