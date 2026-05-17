@@ -251,6 +251,36 @@ npm run build
 npm start
 ```
 
+## GitHub Pages Deployment
+
+GitHub Pages can host only the static React frontend. It cannot run the Node/Express backend in `server.ts`.
+
+Use this build command for GitHub Pages:
+
+```bash
+npm run build:pages
+```
+
+That command builds the app with the correct repository base path:
+
+```text
+/IS-ArtiSrc-Control-Center/
+```
+
+Without that base path, GitHub Pages may show a blank page because the browser tries to load JavaScript and CSS from `/assets/...` instead of `/IS-ArtiSrc-Control-Center/assets/...`.
+
+On GitHub Pages:
+
+| Feature | Status |
+| --- | --- |
+| Local ZIP upload | Works as a static browser feature. |
+| Script rename and ZIP download | Works in the browser. |
+| Unused resource scan | Works in the browser. |
+| Connect to CPI | Does not work without a hosted backend. |
+| Deploy to CPI | Does not work without a hosted backend. |
+
+For the full CPI API workflow, deploy the Node server to a platform that can run backend services, such as Render, Railway, Azure App Service, AWS, Google Cloud Run, or a company-hosted server.
+
 ## Command Reference
 
 | Command | Description |
@@ -259,6 +289,7 @@ npm start
 | `npm run dev` | Build and run the ready-to-use local server. |
 | `npm run lint` | Run TypeScript checks with `tsc --noEmit`. |
 | `npm run build` | Build frontend and bundle the Node server as ESM. |
+| `npm run build:pages` | Build the static frontend for GitHub Pages. |
 | `npm start` | Start the built server from `dist/server.mjs`. |
 
 ## Production Readiness Checklist
