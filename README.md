@@ -309,6 +309,35 @@ If you click CPI download on GitHub Pages, a backend call such as `POST /api/cpi
 
 For the full CPI API workflow, deploy the Node server to a platform that can run backend services, such as Render, Railway, Azure App Service, AWS, Google Cloud Run, or a company-hosted server.
 
+## Vercel Deployment
+
+Vercel can host the React frontend and run serverless API routes from the `api/` folder.
+
+This repository includes Vercel-compatible routes:
+
+```text
+api/cpi/download.ts
+api/cpi/upload.ts
+```
+
+Those routes match the frontend requests:
+
+```text
+POST /api/cpi/download
+PUT  /api/cpi/upload
+```
+
+Use the normal Vercel defaults for a Vite project:
+
+| Setting | Value |
+| --- | --- |
+| Framework Preset | Vite |
+| Install Command | `npm ci` |
+| Build Command | `npm run build` |
+| Output Directory | `dist` |
+
+If Vercel returns `404 NOT_FOUND` for `/api/cpi/download`, the serverless API routes are not deployed yet. Push the latest code and redeploy the project.
+
 ## Command Reference
 
 | Command | Description |
