@@ -109,6 +109,11 @@ function getScriptNameWarnings(script: ScriptFile, scripts: ScriptFile[]) {
     warnings.push('Use a .groovy or .js extension.');
   }
 
+  const baseName = nextName.replace(/\.(groovy|js)$/i, '');
+  if (!baseName.replace(/\./g, '').trim()) {
+    warnings.push('Add a script name before the extension.');
+  }
+
   const duplicateCount = scripts.filter(item => item.newName.trim().toLowerCase() === nextName.toLowerCase()).length;
   if (duplicateCount > 1) {
     warnings.push('This new script name is duplicated.');
@@ -898,6 +903,7 @@ export default function App() {
                   {[
                     'Accepts ZIP artifacts only',
                     'Warns on empty script names',
+                    'Requires a name before the extension',
                     'Blocks duplicated script names',
                     'Checks .groovy and .js extensions',
                     'Shows unused resource analysis separately',
