@@ -71,10 +71,21 @@ export default function App() {
   };
 
   const [cpiConfig, setCpiConfig] = useState<CpiConfig>(() => {
-    const saved = localStorage.getItem('sap-cpi-config');
-    if (saved) {
+    // Try to recover full config from session storage first
+    const sessionSaved = sessionStorage.getItem('sap-cpi-config');
+    if (sessionSaved) {
       try {
-        return JSON.parse(saved);
+        return JSON.parse(sessionSaved);
+      } catch (e) {}
+    }
+    
+    // Fallback to local storage (which won't have the password)
+    const localSaved = localStorage.getItem('sap-cpi-config');
+    if (localSaved) {
+      try {
+        const parsed = JSON.parse(localSaved);
+        // Ensure password is never restored from localStorage just in case it was saved before the security update
+        return { ...parsed, password: '' };
       } catch (e) {}
     }
     return { url: '', tokenUrl: '', username: '', password: '', iflowId: '' };
@@ -88,6 +99,15 @@ export default function App() {
     }
     return { urls: [] as string[], tokenUrls: [] as string[], usernames: [] as string[], iflowIds: [] as string[] };
   });
+
+  const saveConfigToStorage = (config: CpiConfig) => {
+    // Save full config to session storage (cleared when tab closes)
+    sessionStorage.setItem('sap-cpi-config', JSON.stringify(config));
+    
+    // Save non-sensitive data to local storage for convenience across sessions
+    const { password, ...safeConfig } = config;
+    localStorage.setItem('sap-cpi-config', JSON.stringify(safeConfig));
+  };
 
   const updateHistory = (newConfig: CpiConfig) => {
     setConfigHistory(prev => {
@@ -230,7 +250,7 @@ export default function App() {
       return;
     }
     
-    localStorage.setItem('sap-cpi-config', JSON.stringify(cpiConfig));
+    saveConfigToStorage(cpiConfig);
     updateHistory(cpiConfig);
     setIsApiLoading(true);
     try {
@@ -352,7 +372,7 @@ export default function App() {
         const downloadName = iFlowName.replace('.zip', '') + '_modified.zip';
         saveAs(generatedBlob, downloadName);
       } else if (action === 'deploy') {
-        localStorage.setItem('sap-cpi-config', JSON.stringify(cpiConfig));
+        saveConfigToStorage(cpiConfig);
         updateHistory(cpiConfig);
         const base64Zip = await newZip.generateAsync({ type: 'base64', compression: 'DEFLATE' });
         
