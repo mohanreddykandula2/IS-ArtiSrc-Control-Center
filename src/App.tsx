@@ -167,6 +167,7 @@ export default function App() {
   const [isApiLoading, setIsApiLoading] = useState(false);
   const [isApiDeployed, setIsApiDeployed] = useState(false);
   const [loadedFromApi, setLoadedFromApi] = useState(false);
+  const isGitHubPagesHost = typeof window !== 'undefined' && window.location.hostname.endsWith('github.io');
 
   const apiErrors = useMemo(() => getApiErrors(cpiConfig), [cpiConfig]);
   const hasApiErrors = Object.keys(apiErrors).length > 0;
@@ -389,6 +390,15 @@ export default function App() {
   const fetchFromApi = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     setFormSubmitted(true);
+
+    if (isGitHubPagesHost) {
+      setNotice({
+        tone: 'warning',
+        title: 'Backend not available on GitHub Pages',
+        message: 'GitHub Pages can run the local ZIP tools only. CPI download and deploy require the Node backend to be hosted separately.',
+      });
+      return;
+    }
 
     if (hasApiErrors) {
       setNotice({
@@ -683,6 +693,17 @@ export default function App() {
                       </div>
                     </div>
 
+                    {isGitHubPagesHost && (
+                      <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+                        <div className="flex items-start gap-2">
+                          <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
+                          <p>
+                            GitHub Pages is static hosting, so CPI API download and deploy are unavailable here. Use local ZIP mode on Pages, or host the Node backend separately for CPI connectivity.
+                          </p>
+                        </div>
+                      </div>
+                    )}
+
                     <div>
                       <label className="mb-2 block text-sm font-semibold text-neutral-700">Auto-fill from Service Key</label>
                       <div className="grid gap-2 sm:grid-cols-[1fr_auto]">
@@ -811,6 +832,11 @@ export default function App() {
                         <>
                           <RefreshCw className="h-4 w-4 animate-spin" />
                           Connecting to SAP CPI...
+                        </>
+                      ) : isGitHubPagesHost ? (
+                        <>
+                          <AlertTriangle className="h-4 w-4" />
+                          Backend Required for CPI
                         </>
                       ) : (
                         <>

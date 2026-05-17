@@ -305,6 +305,8 @@ On GitHub Pages:
 | Connect to CPI | Does not work without a hosted backend. |
 | Deploy to CPI | Does not work without a hosted backend. |
 
+If you click CPI download on GitHub Pages, a backend call such as `POST /api/cpi/download` cannot be handled by Pages. Static Pages hosting may return `405 Not Allowed` for that request.
+
 For the full CPI API workflow, deploy the Node server to a platform that can run backend services, such as Render, Railway, Azure App Service, AWS, Google Cloud Run, or a company-hosted server.
 
 ## Command Reference
