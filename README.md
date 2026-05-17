@@ -255,6 +255,20 @@ npm start
 
 GitHub Pages can host only the static React frontend. It cannot run the Node/Express backend in `server.ts`.
 
+Use the included GitHub Actions workflow for Pages deployment:
+
+```text
+.github/workflows/deploy-pages.yml
+```
+
+In the repository settings, set GitHub Pages source to:
+
+```text
+GitHub Actions
+```
+
+Do not use `Deploy from a branch -> main -> / (root)` for this app. That setting serves the source repository directly, so GitHub Pages will load `index.html` without first compiling the Vite/TypeScript app, which can show a blank page.
+
 Use this build command for GitHub Pages:
 
 ```bash
