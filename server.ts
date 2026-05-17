@@ -1,8 +1,9 @@
 import express from "express";
 import path from "path";
 import { createServer as createViteServer } from "vite";
+import react from "@vitejs/plugin-react";
 import axios from "axios";
-import { fileURLToPath } from "url";
+import { fileURLToPath, pathToFileURL } from "url";
 
 // Polyfill __dirname for ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -168,8 +169,19 @@ async function startServer() {
 
 
   // Vite middleware for development
-  if (process.env.NODE_ENV !== "production") {
+  const isProduction = process.env.NODE_ENV === "production" || path.basename(__dirname) === "dist";
+
+  if (!isProduction) {
+    const tailwindModule = await import(pathToFileURL(path.join(process.cwd(), "node_modules", "@tailwindcss", "vite", "dist", "index.mjs")).href);
+    const tailwindcss = tailwindModule.default;
     const vite = await createViteServer({
+      configFile: false,
+      plugins: [react(), tailwindcss()],
+      resolve: {
+        alias: {
+          "@": process.cwd(),
+        },
+      },
       server: { middlewareMode: true },
       appType: "spa",
     });
