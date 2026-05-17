@@ -1,6 +1,16 @@
 import axios from 'axios';
 import { getAuthHeaders, normalizeCpiBaseUrl, readJsonBody, sendCpiError } from './_utils';
 
+export const config = {
+  api: {
+    bodyParser: {
+      sizeLimit: '50mb',
+    },
+    responseLimit: false,
+  },
+  maxDuration: 60,
+};
+
 export default async function handler(req: any, res: any) {
   if (req.method !== 'PUT') {
     res.setHeader('Allow', 'PUT');

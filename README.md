@@ -316,6 +316,7 @@ Vercel can host the React frontend and run serverless API routes from the `api/`
 This repository includes Vercel-compatible routes:
 
 ```text
+api/health.ts
 api/cpi/download.ts
 api/cpi/upload.ts
 ```
@@ -337,6 +338,28 @@ Use the normal Vercel defaults for a Vite project:
 | Output Directory | `dist` |
 
 If Vercel returns `404 NOT_FOUND` for `/api/cpi/download`, the serverless API routes are not deployed yet. Push the latest code and redeploy the project.
+
+After deployment, open this URL first to confirm that the serverless backend exists:
+
+```text
+https://your-vercel-domain.vercel.app/api/health
+```
+
+It should return:
+
+```json
+{
+  "success": true,
+  "message": "Vercel API backend is running."
+}
+```
+
+If Vercel returns `FUNCTION_INVOCATION_FAILED`, check the function logs in the Vercel dashboard. Common causes are:
+
+- The SAP CPI endpoint is unreachable from Vercel.
+- The request takes longer than the serverless function timeout.
+- The downloaded iFlow ZIP is too large for Vercel serverless response limits.
+- The CPI credentials or token URL are invalid.
 
 ## Command Reference
 
