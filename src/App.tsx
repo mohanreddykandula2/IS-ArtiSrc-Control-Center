@@ -637,7 +637,7 @@ export default function App() {
               <CloudCog className="h-6 w-6" strokeWidth={2} />
             </div>
             <div>
-              <h1 className="text-xl font-semibold tracking-tight">SAP CPI Flow Renamer</h1>
+              <h1 className="text-xl font-semibold tracking-tight">CPI Utility Hub</h1>
               <p className="text-sm font-medium text-neutral-500">Rename scripts, validate references, and review unused resources.</p>
             </div>
           </div>
