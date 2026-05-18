@@ -207,6 +207,21 @@ export default function App() {
     });
   };
 
+  const clearSavedCredentials = () => {
+    sessionStorage.removeItem('sap-cpi-config');
+    localStorage.removeItem('sap-cpi-config');
+    localStorage.removeItem('sap-cpi-history');
+    setCpiConfig(emptyConfig);
+    setConfigHistory({ urls: [], tokenUrls: [], usernames: [], iflowIds: [] });
+    setServiceKeyJson('');
+    setFormSubmitted(false);
+    setNotice({
+      tone: 'success',
+      title: 'Credentials cleared',
+      message: 'Saved CPI credentials and history were removed from this browser.',
+    });
+  };
+
   const parseServiceKey = () => {
     if (!serviceKeyJson.trim()) return;
 
@@ -828,28 +843,37 @@ export default function App() {
                       </div>
                     </div>
 
-                    <button
-                      type="submit"
-                      disabled={isApiLoading}
-                      className="flex w-full items-center justify-center gap-2 rounded-lg bg-neutral-950 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-neutral-800 disabled:cursor-not-allowed disabled:bg-neutral-300"
-                    >
-                      {isApiLoading ? (
-                        <>
-                          <RefreshCw className="h-4 w-4 animate-spin" />
-                          Connecting to SAP CPI...
-                        </>
-                      ) : isGitHubPagesHost ? (
-                        <>
-                          <AlertTriangle className="h-4 w-4" />
-                          Backend Required for CPI
-                        </>
-                      ) : (
-                        <>
-                          <CloudCog className="h-4 w-4" />
-                          Download Sandbox Artifact
-                        </>
-                      )}
-                    </button>
+                    <div className="grid gap-3 sm:grid-cols-[1fr_auto]">
+                      <button
+                        type="submit"
+                        disabled={isApiLoading}
+                        className="flex w-full items-center justify-center gap-2 rounded-lg bg-neutral-950 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-neutral-800 disabled:cursor-not-allowed disabled:bg-neutral-300"
+                      >
+                        {isApiLoading ? (
+                          <>
+                            <RefreshCw className="h-4 w-4 animate-spin" />
+                            Connecting to SAP CPI...
+                          </>
+                        ) : isGitHubPagesHost ? (
+                          <>
+                            <AlertTriangle className="h-4 w-4" />
+                            Backend Required for CPI
+                          </>
+                        ) : (
+                          <>
+                            <CloudCog className="h-4 w-4" />
+                            Download Sandbox Artifact
+                          </>
+                        )}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={clearSavedCredentials}
+                        className="rounded-lg border border-neutral-200 bg-white px-4 py-3 text-sm font-semibold text-neutral-700 shadow-sm transition hover:border-neutral-300 hover:bg-neutral-50"
+                      >
+                        Clear Saved Credentials
+                      </button>
+                    </div>
                   </form>
                 ) : (
                   <div
